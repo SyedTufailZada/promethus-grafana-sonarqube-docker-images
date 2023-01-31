@@ -1,0 +1,64 @@
+<VirtualHost *:80>
+ServerName staging.sso.9ostech.com
+DocumentRoot /var/www/html/staging/staging.sso.9ostech.com/sso-frontend/dist/sso-front-end
+
+<Proxy balancer://sso-fe>
+    BalancerMember http://staging.sso.9ostech.com:80/sso-primary route=primary
+    BalancerMember http://staging.sso.9ostech.com:80/sso-backup route=backup
+
+    ProxySet lbmethod=bytraffic
+    ProxySet lbstatus=%{BALANCER_WORKER_STATUS}
+    ProxySet ping=%{BALANCER_WORKER_PING}
+    ProxySet timeout=5
+    ProxySet failontimeout=on
+    ProxySet maxattempts=3
+</Proxy>
+
+<Location />
+    ProxyPass balancer://sso-fe/
+    ProxyPassReverse balancer://sso-fe/
+</Location>
+
+<Location /sso-primary>
+    DocumentRoot /var/www/html/staging/staging.sso.9ostech.com/sso-frontend/dist/sso-front-end
+</Location>
+
+<Location /myapp-backup>
+    DocumentRoot /path/to/myapp-backup1/var/www/html/staging/staging2.sso.9ostech.com/sso-frontend/dist/sso-front-end
+</Location>
+
+</VirtualHost>
+#
+#
+#
+<VirtualHost *:443>
+ServerName staging.sso.9ostech.com
+DocumentRoot /var/www/html/staging/staging.sso.9ostech.com/sso-frontend/dist/sso-front-end
+
+<Proxy balancer://sso-fe>
+    BalancerMember http://staging.sso.9ostech.com:80/sso-primary route=primary
+    BalancerMember http://staging.sso.9ostech.com:80/sso-backup route=backup
+
+    ProxySet lbmethod=bytraffic
+    ProxySet lbstatus=%{BALANCER_WORKER_STATUS}
+    ProxySet ping=%{BALANCER_WORKER_PING}
+    ProxySet timeout=5
+    ProxySet failontimeout=on
+    ProxySet maxattempts=3
+</Proxy>
+
+<Location />
+    ProxyPass balancer://sso-fe/
+    ProxyPassReverse balancer://sso-fe/
+</Location>
+
+<Location /sso-primary>
+    DocumentRoot /var/www/html/staging/staging.sso.9ostech.com/sso-frontend/dist/sso-front-end
+</Location>
+
+<Location /myapp-backup>
+    DocumentRoot /path/to/myapp-backup1/var/www/html/staging/staging2.sso.9ostech.com/sso-frontend/dist/sso-front-end
+</Location>
+
+</VirtualHost>
+
